@@ -1,12 +1,14 @@
 import cv2
 import numpy as np 
 
+#converting to grayscale and blurring
 def canny(image):
     gray = cv2.cvtColor(lane_image, cv2.COLOR_RGB2GRAY)
     blur = cv2.GaussianBlur(gray, (5,5),0)
     canny = cv2.Canny(blur, 50, 150)
     return canny
-    
+
+
 def display(image,lines):
     line_image=np.zeros_like(image)
     if lines is not None:
@@ -15,7 +17,7 @@ def display(image,lines):
             cv2.line(line_image, (x1, y1), (x2,y2), (255,0,0),10)
     return line_image
 
-
+#masking regions that are not required
 def region(image):
     mask =np.zeros_like(image)
     height = image.shape[0]
@@ -32,6 +34,8 @@ cropped = region(canny)
 lines = cv2.HoughLinesP(cropped, 2 ,np.pi/180, 100,
 np.array([]), minLineLength =40, maxLineGap = 5) 
 line_image=display(lane_image, lines)
+
+#final image
 combo_image = cv2.addWeighted(lane_image, 0.8, line_image, 1,1)
 cv2.imshow("result", combo_image)
 cv2.waitKey(0)
